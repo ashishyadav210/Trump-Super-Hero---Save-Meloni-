@@ -32,7 +32,7 @@ To play this incredible game, just follow these simple steps.
 
 1.  **Clone the repo:**
     ```
-    git clone https://github.com/your-username/your-repository-name.git
+    git clone https://github.com/ashishyadav210/Trump-Super-Hero---Save-Meloni-.git
     ```
 2.  **Open the Game:**
     *   Navigate to the game folder.
