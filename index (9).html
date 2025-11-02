@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Great Trump Hero - Save Meloni ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+            border: 3px solid #333;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #gameInfo {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            z-index: 10;
+            display: flex;
+            gap: 30px;
+        }
+        
+        .infoItem {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: rgba(0,0,0,0.3);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .infoIcon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+        
+        #gameMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 42px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            display: none;
+            z-index: 20;
+            background-color: rgba(0,0,0,0.5);
+            padding: 20px 40px;
+            border-radius: 10px;
+        }
+        
+        /* Start button in center */
+        #startBtn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(to bottom, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 30;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        #startBtn:hover {
+            background: linear-gradient(to bottom, #5cbf60, #4cae4c);
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+        
+        #startBtn:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+        
+        /* Restart button in upper right corner */
+        #restartBtn {
+            position: absolute;
+            top: 15px;
+            right: 60px;
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: rgba(255, 82, 82, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #restartBtn:hover {
+            background-color: rgba(255, 71, 87, 0.9);
+            transform: scale(1.1);
+        }
+        
+        #restartBtn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Sound toggle as icon in upper right corner */
+        #soundToggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: rgba(33, 150, 243, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #soundToggle:hover {
+            background-color: rgba(33, 150, 243, 0.9);
+            transform: scale(1.1);
+        }
+        
+        #soundToggle:active {
+            transform: scale(0.95);
+        }
+        
+        #loadingScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-top: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* On-screen controls */
+        #onScreenControls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 15;
+            pointer-events: none;
+        }
+        
+        .controlGroup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: auto;
+        }
+        
+        .arrowControls {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(2, 60px);
+            gap: 5px;
+        }
+        
+        .arrowBtn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+            border: 2px solid #333;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .arrowBtn:active, .arrowBtn.active {
+            background: linear-gradient(to bottom, rgba(255, 82, 82, 0.8), rgba(255, 71, 87, 0.6));
+            transform: scale(0.95);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        #leftBtn {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        
+        #rightBtn {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        
+        #jumpBtn {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(to bottom, rgba(76, 175, 80, 0.8), rgba(76, 175, 80, 0.6));
+            border: 2px solid #333;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        #jumpBtn:active, #jumpBtn.active {
+            background: linear-gradient(to bottom, rgba(76, 175, 80, 1), rgba(76, 175, 80, 0.8));
+            transform: scale(0.95);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .controlLabel {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            margin-top: 5px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #gameContainer {
+                height: 500px;
+            }
+            
+            .arrowBtn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            #jumpBtn {
+                width: 70px;
+                height: 70px;
+                font-size: 20px;
+            }
+            
+            #gameInfo {
+                font-size: 18px;
+            }
+        }
+        
+        /* Victory and defeat animations */
+        @keyframes victory {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes defeat {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="gameInfo">
+            <div class="infoItem">
+                <span class="infoIcon">❤️</span>
+                <span id="lives">3</span>
+            </div>
+            <div class="infoItem">
+                <span class="infoIcon">🪙</span>
+                <span id="coins">0</span>
+            </div>
+            <div class="infoItem">
+                <span class="infoIcon">⭐</span>
+                <span id="score">0</span>
+            </div>
+        </div>
+        
+        <div id="gameMessage"></div>
+        
+        <button id="startBtn">Start Game</button>
+        <button id="restartBtn" title="Restart">↻</button>
+        <button id="soundToggle" title="Sound">🔊</button>
+        
+        <!-- On-screen controls -->
+        <div id="onScreenControls">
+            <div class="controlGroup">
+                <div class="arrowControls">
+                    <div></div>
+                    <div></div>
+                    <div id="leftBtn" class="arrowBtn">←</div>
+                    <div id="rightBtn" class="arrowBtn">→</div>
+                </div>
+                <div class="controlLabel">Move</div>
+            </div>
+            
+            <div class="controlGroup">
+                <div id="jumpBtn" class="arrowBtn">↑</div>
+                <div class="controlLabel">Jump</div>
+            </div>
+        </div>
+        
+        <div id="loadingScreen">
+            <div>Loading Game...</div>
+            <div class="loader"></div>
+        </div>
+    </div>
+        <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameInfo = document.getElementById('gameInfo');
+        const gameMessage = document.getElementById('gameMessage');
+        const livesDisplay = document.getElementById('lives');
+        const coinsDisplay = document.getElementById('coins');
+        const scoreDisplay = document.getElementById('score');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const soundToggle = document.getElementById('soundToggle');
+        const loadingScreen = document.getElementById('loadingScreen');
+        
+        // On-screen controls
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const jumpBtn = document.getElementById('jumpBtn');
+        
+        // Set canvas size
+        function resizeCanvas() {
+            const container = document.getElementById('gameContainer');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Game variables
+        let gameRunning = false;
+        let soundEnabled = true;
+        let lives = 3;
+        let coins = 0;
+        let score = 0;
+        let gameWon = false;
+        let gameOver = false;
+        let cameraX = 0;
+        let levelWidth = 2400; // Wider level for better landscape experience
+        
+        // Audio elements
+        const villainSound = new Audio('https://jalwagame.blog/madman.mp3');
+        const rescueSound = new Audio('https://jalwagame.blog/wow.m4a');
+        const backgroundMusic = new Audio('https://jalwagame.blog/male.mp3');
+        
+        // Configure audio
+        villainSound.volume = 0.7;
+        rescueSound.volume = 0.8;
+        backgroundMusic.volume = 0.3;
+        backgroundMusic.loop = true;
+        
+        // Image assets
+        const heroImage = new Image();
+        const femaleImage = new Image();
+        const villainImage = new Image();
+        
+        let imagesLoaded = 0;
+        const totalImages = 3;
+        
+        heroImage.src = 'https://jalwagame.blog/male.png';
+        femaleImage.src = 'https://jalwagame.blog/female.png';
+        villainImage.src = 'https://jalwagame.blog/madman.png';
+        
+        heroImage.onload = checkImagesLoaded;
+        femaleImage.onload = checkImagesLoaded;
+        villainImage.onload = checkImagesLoaded;
+        
+        function checkImagesLoaded() {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) {
+                loadingScreen.style.display = 'none';
+                initGame();
+            }
+        }
+        
+        // Create audio context for sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Sound functions
+        function playSound(frequency, type, duration, volume = 0.3) {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        function playJumpSound() {
+            playSound(400, 'square', 0.1);
+        }
+        
+        function playCoinSound() {
+            playSound(800, 'sine', 0.1);
+            setTimeout(() => playSound(1000, 'sine', 0.1), 50);
+        }
+        
+        function playPowerUpSound() {
+            playSound(400, 'square', 0.1);
+            setTimeout(() => playSound(600, 'square', 0.1), 100);
+            setTimeout(() => playSound(800, 'square', 0.2), 200);
+        }
+        
+        function playVillainAppearSound() {
+            if (soundEnabled) {
+                villainSound.currentTime = 0;
+                villainSound.play().catch(e => console.log('Villain sound play failed:', e));
+            }
+        }
+        
+        function playVillainNearbySound() {
+            if (soundEnabled) {
+                villainSound.currentTime = 0;
+                villainSound.volume = 0.4;
+                villainSound.play().catch(e => console.log('Villain nearby sound play failed:', e));
+                setTimeout(() => {
+                    villainSound.volume = 0.7;
+                }, 1000);
+            }
+        }
+        
+        function playVillainDefeatSound() {
+            playSound(300, 'triangle', 0.2);
+            setTimeout(() => playSound(250, 'triangle', 0.2), 100);
+            setTimeout(() => playSound(200, 'triangle', 0.3), 200);
+        }
+        
+        function playRescueSoundEffect() {
+            if (soundEnabled) {
+                rescueSound.currentTime = 0;
+                rescueSound.play().catch(e => console.log('Rescue sound play failed:', e));
+            }
+        }
+        
+        function playGameOverSound() {
+            playSound(400, 'square', 0.3);
+            setTimeout(() => playSound(300, 'square', 0.3), 200);
+            setTimeout(() => playSound(200, 'square', 0.5), 400);
+        }
+        
+        function playBackgroundMusic() {
+            if (soundEnabled && gameRunning) {
+                backgroundMusic.play().catch(e => console.log('Background music play failed:', e));
+            } else {
+                backgroundMusic.pause();
+            }
+        }
+        
+        function stopBackgroundMusic() {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+        }
+        
+        // Platforms - Mario style
+        const platforms = [
+            // Ground platforms
+            { x: 0, y: 500, width: 400, height: 100 },
+            { x: 450, y: 500, width: 300, height: 100 },
+            { x: 800, y: 500, width: 400, height: 100 },
+            { x: 1250, y: 500, width: 350, height: 100 },
+            { x: 1650, y: 500, width: 400, height: 100 },
+            { x: 2100, y: 500, width: 300, height: 100 },
+            
+            // Floating platforms
+            { x: 150, y: 400, width: 100, height: 20 },
+            { x: 300, y: 330, width: 100, height: 20 },
+            { x: 500, y: 400, width: 100, height: 20 },
+            { x: 700, y: 330, width: 100, height: 20 },
+            { x: 900, y: 400, width: 100, height: 20 },
+            { x: 1100, y: 330, width: 100, height: 20 },
+            { x: 1300, y: 400, width: 100, height: 20 },
+            { x: 1500, y: 250, width: 120, height: 20 },
+            { x: 1700, y: 400, width: 100, height: 20 },
+            { x: 1900, y: 330, width: 100, height: 20 },
+            { x: 2100, y: 400, width: 100, height: 20 }
+        ];
+
+        // Coins
+        const coinPositions = [
+            { x: 180, y: 360 },
+            { x: 330, y: 290 },
+            { x: 530, y: 360 },
+            { x: 730, y: 290 },
+            { x: 930, y: 360 },
+            { x: 1130, y: 290 },
+            { x: 1330, y: 360 },
+            { x: 1550, y: 210 },
+            { x: 1730, y: 360 },
+            { x: 1930, y: 290 },
+            { x: 2130, y: 360 }
+        ];
+        
+        let coinsCollected = new Array(coinPositions.length).fill(false);
+
+        // Hero character
+        const hero = {
+            x: 50,
+            y: 400,
+            width: 50,
+            height: 70,
+            velocityX: 0,
+            velocityY: 0,
+            speed: 5,
+            jumpPower: 12,
+            grounded: false,
+            facingRight: true,
+            invulnerable: false,
+            invulnerableTime: 0
+        };
+
+        // Female character to rescue
+        const female = {
+            x: 2200,
+            y: 430,
+            width: 45,
+            height: 65,
+            rescued: false
+        };
+
+        // Villain character
+        const villain = {
+            x: 600,
+            y: 435,
+            width: 55,
+            height: 75,
+            velocityX: 1.5,
+            direction: 1,
+            attackCooldown: 0,
+            patrolStart: 500,
+            patrolEnd: 800,
+            active: false,
+            defeated: false,
+            nearbySoundPlayed: false
+        };
+
+        // Additional enemies (like Goombas in Mario) - all with villain face
+        const enemies = [
+            { x: 900, y: 465, width: 40, height: 40, velocityX: 1, direction: 1, patrolStart: 850, patrolEnd: 1050, active: false, nearbySoundPlayed: false },
+            { x: 1300, y: 465, width: 40, height: 40, velocityX: 1, direction: -1, patrolStart: 1250, patrolEnd: 1450, active: false, nearbySoundPlayed: false },
+            { x: 1700, y: 465, width: 40, height: 40, velocityX: 1, direction: 1, patrolStart: 1650, patrolEnd: 1850, active: false, nearbySoundPlayed: false },
+            { x: 2000, y: 465, width: 40, height: 40, velocityX: 1, direction: -1, patrolStart: 1950, patrolEnd: 2150, active: false, nearbySoundPlayed: false }
+        ];
+
+        // Power-ups
+        const powerUps = [
+            { x: 250, y: 470, width: 30, height: 30, type: 'mushroom', collected: false },
+            { x: 850, y: 470, width: 30, height: 30, type: 'mushroom', collected: false },
+            { x: 1450, y: 470, width: 30, height: 30, type: 'mushroom', collected: false },
+            { x: 1950, y: 470, width: 30, height: 30, type: 'mushroom', collected: false }
+        ];
+
+        // Controls
+        const keys = {};
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        // On-screen controls
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            keys['ArrowLeft'] = true;
+            leftBtn.classList.add('active');
+        });
+        
+        leftBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys['ArrowLeft'] = false;
+            leftBtn.classList.remove('active');
+        });
+        
+        leftBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            keys['ArrowLeft'] = true;
+            leftBtn.classList.add('active');
+        });
+        
+        leftBtn.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            keys['ArrowLeft'] = false;
+            leftBtn.classList.remove('active');
+        });
+        
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            keys['ArrowRight'] = true;
+            rightBtn.classList.add('active');
+        });
+        
+        rightBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys['ArrowRight'] = false;
+            rightBtn.classList.remove('active');
+        });
+        
+        rightBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            keys['ArrowRight'] = true;
+            rightBtn.classList.add('active');
+        });
+        
+        rightBtn.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            keys['ArrowRight'] = false;
+            rightBtn.classList.remove('active');
+        });
+        
+        jumpBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            keys[' '] = true;
+            jumpBtn.classList.add('active');
+        });
+        
+        jumpBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys[' '] = false;
+            jumpBtn.classList.remove('active');
+        });
+        
+        jumpBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            keys[' '] = true;
+            jumpBtn.classList.add('active');
+        });
+        
+        jumpBtn.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            keys[' '] = false;
+            jumpBtn.classList.remove('active');
+        });
+                // Draw functions
+        function drawHero() {
+            ctx.save();
+            
+            // Draw body
+            ctx.fillStyle = '#FF0000'; // Red shirt like Mario
+            ctx.fillRect(hero.x - cameraX, hero.y + 20, hero.width, hero.height - 20);
+            
+            // Draw pants
+            ctx.fillStyle = '#0000FF'; // Blue pants like Mario
+            ctx.fillRect(hero.x - cameraX, hero.y + 45, hero.width, hero.height - 45);
+            
+            // Draw face image
+            if (heroImage.complete) {
+                // Flip image if facing left
+                if (hero.facingRight) {
+                    ctx.drawImage(heroImage, hero.x - cameraX, hero.y, hero.width, 25);
+                } else {
+                    ctx.save();
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(heroImage, -(hero.x - cameraX + hero.width), hero.y, hero.width, 25);
+                    ctx.restore();
+                }
+            } else {
+                // Fallback if image not loaded
+                ctx.fillStyle = '#FDBCB4'; // Skin color
+                ctx.fillRect(hero.x - cameraX, hero.y, hero.width, 25);
+            }
+            
+            // Flash when invulnerable
+            if (hero.invulnerable && Math.floor(hero.invulnerableTime / 5) % 2 === 0) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fillRect(hero.x - cameraX, hero.y, hero.width, hero.height);
+            }
+            
+            ctx.restore();
+        }
+
+        function drawFemale() {
+            ctx.save();
+            
+            // Draw body
+            ctx.fillStyle = '#FF69B4'; // Pink dress
+            ctx.fillRect(female.x - cameraX, female.y + 20, female.width, female.height - 20);
+            
+            // Draw face image
+            if (femaleImage.complete) {
+                ctx.drawImage(femaleImage, female.x - cameraX, female.y, female.width, 25);
+            } else {
+                // Fallback if image not loaded
+                ctx.fillStyle = '#FDBCB4'; // Skin color
+                ctx.fillRect(female.x - cameraX, female.y, female.width, 25);
+            }
+            
+            // Draw "Help!" text if not rescued
+            if (!female.rescued) {
+                ctx.fillStyle = '#FF0000';
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText('Help!', female.x - cameraX - 5, female.y - 10);
+                
+                // Draw bouncing animation
+                const bounce = Math.sin(Date.now() / 200) * 5;
+                ctx.fillText('Help!', female.x - cameraX - 5, female.y - 10 + bounce);
+            }
+            
+            ctx.restore();
+        }
+
+        function drawVillain() {
+            if (villain.defeated) return;
+            
+            ctx.save();
+            
+            // Draw body
+            ctx.fillStyle = '#800080'; // Purple shirt
+            ctx.fillRect(villain.x - cameraX, villain.y + 20, villain.width, villain.height - 20);
+            
+            // Draw face image
+            if (villainImage.complete) {
+                ctx.drawImage(villainImage, villain.x - cameraX, villain.y, villain.width, 25);
+            } else {
+                // Fallback if image not loaded
+                ctx.fillStyle = '#FDBCB4'; // Skin color
+                ctx.fillRect(villain.x - cameraX, villain.y, villain.width, 25);
+            }
+            
+            // Draw angry eyes
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(villain.x - cameraX + 10, villain.y + 8, 5, 5);
+            ctx.fillRect(villain.x - cameraX + 30, villain.y + 8, 5, 5);
+            
+            // Draw warning indicator when active
+            if (villain.active) {
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                ctx.beginPath();
+                ctx.arc(villain.x - cameraX + villain.width/2, villain.y - 20, 15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('!', villain.x - cameraX + villain.width/2 - 5, villain.y - 15);
+            }
+            
+            ctx.restore();
+        }
+
+        function drawEnemies() {
+            ctx.fillStyle = '#8B4513'; // Brown color for enemies
+            enemies.forEach(enemy => {
+                if (!enemy.active) return;
+                
+                // Draw body
+                ctx.fillRect(enemy.x - cameraX, enemy.y, enemy.width, enemy.height);
+                
+                // Draw villain face on all enemies
+                if (villainImage.complete) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(enemy.x - cameraX + enemy.width/2, enemy.y + enemy.height/2, enemy.width/2, 0, Math.PI * 2);
+                    ctx.clip();
+                    ctx.drawImage(villainImage, enemy.x - cameraX, enemy.y, enemy.width, enemy.height);
+                    ctx.restore();
+                }
+                
+                // Draw warning indicator when active
+                if (enemy.active) {
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(enemy.x - cameraX + enemy.width/2, enemy.y - 10, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillText('!', enemy.x - cameraX + enemy.width/2 - 3, enemy.y - 7);
+                }
+            });
+        }
+
+        function drawCoins() {
+            ctx.fillStyle = '#FFD700'; // Gold color for coins
+            coinPositions.forEach((coin, index) => {
+                if (!coinsCollected[index]) {
+                    // Draw coin as circle with animation
+                    const scale = 1 + Math.sin(Date.now() / 200 + index) * 0.1;
+                    ctx.save();
+                    ctx.translate(coin.x - cameraX, coin.y);
+                    ctx.scale(scale, scale);
+                    
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Draw coin symbol
+                    ctx.fillStyle = '#B8860B';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillText('$', -5, 5);
+                    ctx.fillStyle = '#FFD700';
+                    
+                    ctx.restore();
+                }
+            });
+        }
+
+        function drawPowerUps() {
+            powerUps.forEach(powerUp => {
+                if (!powerUp.collected) {
+                    if (powerUp.type === 'mushroom') {
+                        // Draw mushroom with animation
+                        const bounce = Math.sin(Date.now() / 300) * 3;
+                        
+                        // Draw stem
+                        ctx.fillStyle = '#F5DEB3'; // Beige stem
+                        ctx.fillRect(powerUp.x - cameraX + 8, powerUp.y + 12 + bounce, 14, 18);
+                        
+                        // Draw cap
+                        ctx.fillStyle = '#FF0000'; // Red cap
+                        ctx.beginPath();
+                        ctx.arc(powerUp.x - cameraX + 15, powerUp.y + 12 + bounce, 15, Math.PI, 0);
+                        ctx.fill();
+                        
+                        // Draw white spots
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.beginPath();
+                        ctx.arc(powerUp.x - cameraX + 10, powerUp.y + 8 + bounce, 3, 0, Math.PI * 2);
+                        ctx.arc(powerUp.x - cameraX + 20, powerUp.y + 10 + bounce, 2, 0, Math.PI * 2);
+                        ctx.arc(powerUp.x - cameraX + 15, powerUp.y + 15 + bounce, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            });
+        }
+
+        function drawPlatforms() {
+            ctx.fillStyle = '#8B4513'; // Brown color for platforms
+            platforms.forEach(platform => {
+                ctx.fillRect(platform.x - cameraX, platform.y, platform.width, platform.height);
+                
+                // Add texture to platforms
+                ctx.fillStyle = '#654321';
+                for (let i = 0; i < platform.width; i += 20) {
+                    ctx.fillRect(platform.x - cameraX + i, platform.y, 2, platform.height);
+                }
+                ctx.fillStyle = '#8B4513';
+            });
+        }
+
+        function drawBackground() {
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#5C94FC');
+            gradient.addColorStop(1, '#98D8E8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw clouds (parallax effect)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            
+            // Cloud positions relative to camera
+            const cloud1X = (100 - cameraX * 0.3) % (canvas.width + 100) - 50;
+            const cloud2X = (500 - cameraX * 0.3) % (canvas.width + 100) - 50;
+            const cloud3X = (900 - cameraX * 0.3) % (canvas.width + 100) - 50;
+            
+            // Cloud 1
+            ctx.beginPath();
+            ctx.arc(cloud1X, 80, 25, 0, Math.PI * 2);
+            ctx.arc(cloud1X + 30, 80, 35, 0, Math.PI * 2);
+            ctx.arc(cloud1X + 60, 80, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cloud 2
+            ctx.beginPath();
+            ctx.arc(cloud2X, 120, 20, 0, Math.PI * 2);
+            ctx.arc(cloud2X + 25, 120, 30, 0, Math.PI * 2);
+            ctx.arc(cloud2X + 50, 120, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cloud 3
+            ctx.beginPath();
+            ctx.arc(cloud3X, 60, 22, 0, Math.PI * 2);
+            ctx.arc(cloud3X + 27, 60, 32, 0, Math.PI * 2);
+            ctx.arc(cloud3X + 54, 60, 22, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw hills in background
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.moveTo(0, 500);
+            ctx.lineTo(200, 350);
+            ctx.lineTo(400, 500);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(300, 500);
+            ctx.lineTo(500, 380);
+            ctx.lineTo(700, 500);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw castle at the end
+            if (cameraX > 1800) {
+                ctx.fillStyle = '#A0A0A0';
+                ctx.fillRect(2200 - cameraX, 300, 100, 200);
+                
+                // Castle towers
+                ctx.fillRect(2180 - cameraX, 280, 20, 220);
+                ctx.fillRect(2200 - cameraX, 260, 20, 240);
+                ctx.fillRect(2220 - cameraX, 280, 20, 220);
+                ctx.fillRect(2240 - cameraX, 300, 20, 200);
+                ctx.fillRect(2260 - cameraX, 280, 20, 220);
+                
+                // Castle gate
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(2240 - cameraX, 380, 40, 120);
+                
+                // Castle flags
+                ctx.fillStyle = '#FF0000';
+                ctx.beginPath();
+                ctx.moveTo(2210 - cameraX, 260);
+                ctx.lineTo(2230 - cameraX, 270);
+                ctx.lineTo(2210 - cameraX, 280);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+                // Update functions
+        function updateHero() {
+            // Handle input
+            if (keys['ArrowLeft']) {
+                hero.velocityX = -hero.speed;
+                hero.facingRight = false;
+            } else if (keys['ArrowRight']) {
+                hero.velocityX = hero.speed;
+                hero.facingRight = true;
+            } else {
+                hero.velocityX *= 0.8; // Friction
+            }
+            
+            if (keys[' '] && hero.grounded) {
+                hero.velocityY = -hero.jumpPower;
+                hero.grounded = false;
+                playJumpSound();
+            }
+            
+            // Apply gravity
+            hero.velocityY += 0.5;
+            
+            // Update position
+            hero.x += hero.velocityX;
+            hero.y += hero.velocityY;
+            
+            // Check boundaries
+            if (hero.x < 0) hero.x = 0;
+            if (hero.x + hero.width > levelWidth) hero.x = levelWidth - hero.width;
+            
+            // Update camera to follow hero
+            cameraX = hero.x - canvas.width / 2;
+            if (cameraX < 0) cameraX = 0;
+            if (cameraX > levelWidth - canvas.width) cameraX = levelWidth - canvas.width;
+            
+            // Check platform collisions
+            hero.grounded = false;
+            platforms.forEach(platform => {
+                if (hero.x < platform.x + platform.width &&
+                    hero.x + hero.width > platform.x &&
+                    hero.y < platform.y + platform.height &&
+                    hero.y + hero.height > platform.y) {
+                    
+                    // Top collision (landing on platform)
+                    if (hero.velocityY > 0 && hero.y < platform.y) {
+                        hero.y = platform.y - hero.height;
+                        hero.velocityY = 0;
+                        hero.grounded = true;
+                    }
+                }
+            });
+            
+            // Update invulnerability
+            if (hero.invulnerable) {
+                hero.invulnerableTime--;
+                if (hero.invulnerableTime <= 0) {
+                    hero.invulnerable = false;
+                }
+            }
+            
+            // Check coin collection
+            coinPositions.forEach((coin, index) => {
+                if (!coinsCollected[index] &&
+                    Math.abs(hero.x + hero.width/2 - coin.x) < 25 &&
+                    Math.abs(hero.y + hero.height/2 - coin.y) < 25) {
+                    
+                    coinsCollected[index] = true;
+                    coins++;
+                    score += 10;
+                    coinsDisplay.textContent = coins;
+                    scoreDisplay.textContent = score;
+                    playCoinSound();
+                }
+            });
+            
+            // Check power-up collection
+            powerUps.forEach(powerUp => {
+                if (!powerUp.collected &&
+                    hero.x < powerUp.x + powerUp.width &&
+                    hero.x + hero.width > powerUp.x &&
+                    hero.y < powerUp.y + powerUp.height &&
+                    hero.y + hero.height > powerUp.y) {
+                    
+                    powerUp.collected = true;
+                    score += 50;
+                    scoreDisplay.textContent = score;
+                    playPowerUpSound();
+                    
+                    // Power-up effect (bigger jump)
+                    hero.jumpPower = 15;
+                    setTimeout(() => { hero.jumpPower = 12; }, 5000);
+                }
+            });
+            
+            // Check if hero rescued the female
+            if (!female.rescued &&
+                hero.x < female.x + female.width &&
+                hero.x + hero.width > female.x &&
+                hero.y < female.y + female.height &&
+                hero.y + hero.height > female.y) {
+                
+                female.rescued = true;
+                score += 200;
+                scoreDisplay.textContent = score;
+                playRescueSoundEffect();
+                
+                // Check win condition
+                if (female.rescued) {
+                    gameWon = true;
+                    gameRunning = false;
+                    showMessage("Trump ❤️ Meloni");
+                    stopBackgroundMusic();
+                }
+            }
+        }
+
+        function updateVillain() {
+            if (villain.defeated) return;
+            
+            // Activate villain when hero gets close
+            if (!villain.active && Math.abs(hero.x - villain.x) < 300) {
+                villain.active = true;
+                playVillainAppearSound();
+            }
+            
+            // Play nearby sound when villain is close but not too close
+            if (villain.active && !villain.nearbySoundPlayed && Math.abs(hero.x - villain.x) < 200 && Math.abs(hero.x - villain.x) > 100) {
+                playVillainNearbySound();
+                villain.nearbySoundPlayed = true;
+                setTimeout(() => { villain.nearbySoundPlayed = false; }, 3000);
+            }
+            
+            // Move villain
+            villain.x += villain.velocityX * villain.direction;
+            
+            // Change direction at patrol boundaries
+            if (villain.x <= villain.patrolStart || villain.x + villain.width >= villain.patrolEnd) {
+                villain.direction *= -1;
+            }
+            
+            // Check if villain attacks hero
+            if (villain.active && villain.attackCooldown <= 0 && !hero.invulnerable &&
+                hero.x < villain.x + villain.width &&
+                hero.x + hero.width > villain.x &&
+                hero.y < villain.y + villain.height &&
+                hero.y + hero.height > villain.y) {
+                
+                lives--;
+                livesDisplay.textContent = lives;
+                villain.attackCooldown = 120; // 2 seconds at 60fps
+                
+                // Make hero invulnerable for a short time
+                hero.invulnerable = true;
+                hero.invulnerableTime = 120;
+                
+                // Reset hero position
+                hero.x = 50;
+                hero.y = 400;
+                hero.velocityX = 0;
+                hero.velocityY = 0;
+                
+                // Check game over
+                if (lives <= 0) {
+                    gameOver = true;
+                    gameRunning = false;
+                    showMessage("Game Over!");
+                    stopBackgroundMusic();
+                    playGameOverSound();
+                }
+            }
+            
+            if (villain.attackCooldown > 0) {
+                villain.attackCooldown--;
+            }
+            
+            // Check if hero defeats villain by jumping on it
+            if (villain.active && !villain.defeated &&
+                hero.velocityY > 0 && hero.y < villain.y &&
+                hero.x < villain.x + villain.width &&
+                hero.x + hero.width > villain.x) {
+                
+                villain.defeated = true;
+                score += 100;
+                scoreDisplay.textContent = score;
+                hero.velocityY = -8; // Bounce
+                playVillainDefeatSound();
+            }
+        }
+
+        function updateEnemies() {
+            enemies.forEach(enemy => {
+                // Activate enemy when hero gets close
+                if (!enemy.active && Math.abs(hero.x - enemy.x) < 300) {
+                    enemy.active = true;
+                }
+                
+                if (!enemy.active) return;
+                
+                // Play nearby sound when enemy is close but not too close
+                if (enemy.active && !enemy.nearbySoundPlayed && Math.abs(hero.x - enemy.x) < 200 && Math.abs(hero.x - enemy.x) > 100) {
+                    playVillainNearbySound();
+                    enemy.nearbySoundPlayed = true;
+                    setTimeout(() => { enemy.nearbySoundPlayed = false; }, 3000);
+                }
+                
+                // Move enemy
+                enemy.x += enemy.velocityX * enemy.direction;
+                
+                // Change direction at patrol boundaries
+                if (enemy.x <= enemy.patrolStart || enemy.x + enemy.width >= enemy.patrolEnd) {
+                    enemy.direction *= -1;
+                }
+                
+                // Check if enemy attacks hero
+                if (!hero.invulnerable &&
+                    hero.x < enemy.x + enemy.width &&
+                    hero.x + hero.width > enemy.x &&
+                    hero.y < enemy.y + enemy.height &&
+                    hero.y + hero.height > enemy.y) {
+                    
+                    // Check if hero is jumping on enemy (like Mario)
+                    if (hero.velocityY > 0 && hero.y < enemy.y) {
+                        // Hero defeated enemy
+                        enemy.active = false;
+                        score += 25;
+                        scoreDisplay.textContent = score;
+                        hero.velocityY = -8; // Bounce
+                    } else {
+                        // Enemy hurt hero
+                        lives--;
+                        livesDisplay.textContent = lives;
+                        
+                        // Make hero invulnerable for a short time
+                        hero.invulnerable = true;
+                        hero.invulnerableTime = 120;
+                        
+                        // Reset hero position
+                        hero.x = 50;
+                        hero.y = 400;
+                        hero.velocityX = 0;
+                        hero.velocityY = 0;
+                        
+                        // Check game over
+                        if (lives <= 0) {
+                            gameOver = true;
+                            gameRunning = false;
+                            showMessage("Game Over!");
+                            stopBackgroundMusic();
+                            playGameOverSound();
+                        }
+                    }
+                }
+            });
+        }
+
+        function showMessage(text) {
+            gameMessage.textContent = text;
+            gameMessage.style.display = 'block';
+        }
+
+        function hideMessage() {
+            gameMessage.style.display = 'none';
+        }
+
+        function resetGame() {
+            lives = 3;
+            coins = 0;
+            score = 0;
+            gameWon = false;
+            gameOver = false;
+            cameraX = 0;
+            livesDisplay.textContent = lives;
+            coinsDisplay.textContent = coins;
+            scoreDisplay.textContent = score;
+            
+            // Reset positions
+            hero.x = 50;
+            hero.y = 400;
+            hero.velocityX = 0;
+            hero.velocityY = 0;
+            hero.facingRight = true;
+            hero.invulnerable = false;
+            hero.invulnerableTime = 0;
+            
+            female.x = 2200;
+            female.y = 430;
+            female.rescued = false;
+            
+            villain.x = 600;
+            villain.y = 435;
+            villain.direction = 1;
+            villain.attackCooldown = 0;
+            villain.active = false;
+            villain.defeated = false;
+            villain.nearbySoundPlayed = false;
+            
+            // Reset enemies
+            enemies[0].x = 900;
+            enemies[0].active = false;
+            enemies[0].nearbySoundPlayed = false;
+            enemies[1].x = 1300;
+            enemies[1].active = false;
+            enemies[1].nearbySoundPlayed = false;
+            enemies[2].x = 1700;
+            enemies[2].active = false;
+            enemies[2].nearbySoundPlayed = false;
+            enemies[3].x = 2000;
+            enemies[3].active = false;
+            enemies[3].nearbySoundPlayed = false;
+            
+            // Reset coins
+            coinsCollected = new Array(coinPositions.length).fill(false);
+            
+            // Reset power-ups
+            powerUps.forEach(powerUp => {
+                powerUp.collected = false;
+            });
+            
+            hideMessage();
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw everything
+            drawBackground();
+            drawPlatforms();
+            drawCoins();
+            drawPowerUps();
+            drawHero();
+            drawFemale();
+            drawVillain();
+            drawEnemies();
+            
+            // Update game state
+            updateHero();
+            updateVillain();
+            updateEnemies();
+            
+            // Continue game loop
+            requestAnimationFrame(gameLoop);
+        }
+
+        function initGame() {
+            // Initial draw
+            drawBackground();
+            drawPlatforms();
+            drawCoins();
+            drawPowerUps();
+            drawHero();
+            drawFemale();
+            drawVillain();
+            drawEnemies();
+            
+            // Event listeners
+            startBtn.addEventListener('click', () => {
+                if (!gameRunning) {
+                    startBtn.style.display = 'none';
+                    resetGame();
+                    gameRunning = true;
+                    playBackgroundMusic();
+                    gameLoop();
+                }
+            });
+
+            restartBtn.addEventListener('click', () => {
+                gameRunning = false;
+                stopBackgroundMusic();
+                resetGame();
+                gameRunning = true;
+                playBackgroundMusic();
+                gameLoop();
+            });
+
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+                if (soundEnabled && gameRunning) {
+                    playBackgroundMusic();
+                } else {
+                    stopBackgroundMusic();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
